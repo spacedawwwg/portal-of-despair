@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
-    VitePWA({ registerType: 'autoUpdate' })
+    VitePWA({ registerType: 'autoUpdate', includeAssets: ['**/*.woff2', '**/*.mp3', '**/*.png'] })
   ],
   resolve: {
     alias: {
