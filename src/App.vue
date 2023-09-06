@@ -4,6 +4,28 @@ import { ref } from 'vue'
 const audio = ref(new Audio())
 const playing = ref(false)
 const showMore = ref(false)
+const showSounds = ref(false)
+
+let idleDelay: any = null
+
+function startIdleDelay() {
+  idleDelay = setTimeout(handleIdle, 30000)
+}
+
+function resetIdleDelay() {
+  if (idleDelay) {
+    clearTimeout(idleDelay)
+  }
+}
+
+function handleIdle() {
+  if (playing.value) {
+    resetIdleDelay()
+    startIdleDelay()
+    return
+  }
+  showSounds.value = false
+}
 
 const sounds = ['despair', 'scream', 'laugh']
 const moreSounds = ['chris', 'ronnie', 'nick', 'martin', 'steve']
@@ -12,6 +34,9 @@ const play = (sound: string) => {
   playing.value = true
   audio.value = new Audio(`./${sound}.mp3`)
   audio.value.play()
+  audio.value.onended = () => {
+    playing.value = false
+  }
 }
 
 const stop = () => {
@@ -19,29 +44,43 @@ const stop = () => {
   audio.value.pause()
   audio.value.currentTime = 0
 }
+
+const start = () => {
+  showSounds.value = true
+  resetIdleDelay()
+  startIdleDelay()
+}
 </script>
 
 <template>
-  <div v-if="!playing" class="options">
-    <div class="main">
-      <h1>Choose your fear...</h1>
-      <button v-for="sound in sounds" :key="sound" @click="play(sound)">
-        {{ sound }}
-      </button>
-    </div>
-    <div class="more">
-      <button @click="showMore = !showMore" class="more-toggle">
-        {{ showMore ? 'Show Less' : 'More...' }}
-      </button>
-      <div v-if="showMore">
-        <button v-for="sound in moreSounds" :key="sound" @click="play(sound)">
+  <div v-if="!showSounds" class="landing">
+    <h1 class="title">Of Despair <span>&amp;</span> Shadow</h1>
+    <p class="name">By Paul Welsh</p>
+    <button @click="start">Test the Portal?</button>
+  </div>
+
+  <template v-if="showSounds">
+    <div v-if="!playing" class="options">
+      <div class="main">
+        <h1>Choose your sound...</h1>
+        <button v-for="sound in sounds" :key="sound" @click="play(sound)">
           {{ sound }}
         </button>
       </div>
+      <div class="more">
+        <button @click="showMore = !showMore" class="more-toggle">
+          {{ showMore ? 'Show Less' : 'More...' }}
+        </button>
+        <div v-if="showMore">
+          <button v-for="sound in moreSounds" :key="sound" @click="play(sound)">
+            {{ sound }}
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <button @click="stop" v-if="playing">Stop it, I'm scared!!!</button>
+    <button @click="stop" v-if="playing">Stop it, I'm scared!!!</button>
+  </template>
 
   <div class="bg"></div>
   <div class="bg bg-2"></div>
@@ -49,6 +88,31 @@ const stop = () => {
 </template>
 
 <style scoped>
+.landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.title {
+  font-size: 3rem;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+.title span {
+  font-family: slender-new;
+}
+
+.name {
+  font-size: 1.5rem;
+  margin-bottom: 40px;
+  color: #fff;
+}
+
 .options {
   display: flex;
   flex-direction: column;
@@ -57,7 +121,7 @@ const stop = () => {
   height: 100vh;
 }
 
-h1{
+h1 {
   color: #fff;
   margin-bottom: 10px;
   font-size: 1.8rem;
@@ -80,19 +144,19 @@ button {
   font-family: slender, san-serif;
 }
 
-button:nth-child(1) {
+button:nth-of-type(1) {
   rotate: 3deg;
 }
 
-button:nth-child(3) {
+button:nth-of-type(3) {
   rotate: -1deg;
 }
 
-button:nth-child(4) {
+button:nth-of-type(4) {
   rotate: 1deg;
 }
 
-button:nth-child(5) {
+button:nth-of-type(5) {
   rotate: -3deg;
 }
 

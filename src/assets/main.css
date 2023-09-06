@@ -11,6 +11,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'slender-new';
+  src: url('/slender-new.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 html,body {
   overflow: hidden;
   height: 100vh;
